@@ -14,13 +14,6 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URI,
 })
 
-const createPool = async (): Promise<void> => {
-  const client = await pool.connect()
-  console.log({ client })
-}
-
-createPool()
-
 var schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType', // just used to uniquely identify for debugging purposes (only for server)
