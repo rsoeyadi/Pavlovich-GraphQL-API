@@ -7,5 +7,6 @@ export const PromptType = new GraphQLObjectType({
     prompt_text: { type: GraphQLString },
     created_at: { type: GraphQLString },
     is_active: { type: GraphQLBoolean },
+    likes_counter: { type: GraphQLInt },
   }
 });
