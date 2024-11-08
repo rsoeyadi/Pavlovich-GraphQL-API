@@ -1,9 +1,13 @@
 import { pool } from '../db/pool';
 import { PromptType } from '../schema/types/PromptType';
-import { GraphQLObjectType, GraphQLString } from 'graphql';
+import { GraphQLInt, GraphQLObjectType, GraphQLString } from 'graphql';
 
 interface AddPromptArgsType {
   prompt_text: string;
+}
+
+interface DeletePromptsArgsType {
+  id: number;
 }
 
 export const addPrompt = {
@@ -28,3 +32,38 @@ export const addPrompt = {
     }
   }
 };
+
+export const deletePrompt = {
+  type: PromptType,
+  args: {
+    id: { type: GraphQLInt },
+  },
+  async resolve(_: any, args: DeletePromptsArgsType) {
+    const { id } = args;
+    try {
+      const client = await pool.connect();
+      const res = await client.query('DELETE FROM prompts WHERE id = $1 RETURNING *', [id]);
+      client.release();
+      return res.rows;
+    } catch (err) {
+      console.error('Error: ', err);
+      throw new Error('Trouble adding that prompt to the database!');
+    }
+  }
+};
+
+export const deleteAllPrompts = {
+  type: PromptType,
+  async resolve(): Promise<any> {
+    try {
+      const client = await pool.connect();
+      const res = await client.query('DELETE FROM prompts')
+      client.release()
+      return res.rows
+
+    } catch (err) {
+      console.error('Error: ', err);
+      throw new Error('Trouble adding that prompt to the database!');
+    }
+  }
+}

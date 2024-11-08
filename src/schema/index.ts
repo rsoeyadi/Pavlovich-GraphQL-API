@@ -1,6 +1,6 @@
 import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 import { getPrompts } from '../resolvers/query';
-import { addPrompt } from '../resolvers/mutation';
+import { addPrompt, deletePrompt, deleteAllPrompts } from '../resolvers/mutation';
 
 export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -13,6 +13,8 @@ export const schema = new GraphQLSchema({
     name: 'RootMutationType',
     fields: {
       addPrompt,
+      deletePrompt,
+      deleteAllPrompts,
     },
   }),
 });
