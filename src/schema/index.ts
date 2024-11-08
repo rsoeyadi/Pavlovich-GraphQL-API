@@ -1,6 +1,6 @@
 import { GraphQLSchema, GraphQLObjectType } from 'graphql';
 import { getPrompts } from '../resolvers/query';
-import { addPrompt, deletePrompt, deleteAllPrompts } from '../resolvers/mutation';
+import { addPrompt, deletePrompt, deleteAllPrompts, incrementPromptLikes } from '../resolvers/mutation';
 
 export const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
@@ -15,6 +15,7 @@ export const schema = new GraphQLSchema({
       addPrompt,
       deletePrompt,
       deleteAllPrompts,
+      incrementPromptLikes,
     },
   }),
 });

@@ -10,6 +10,10 @@ interface DeletePromptsArgsType {
   id: number;
 }
 
+interface IncrementPromptLikesType {
+  id: number;
+}
+
 export const addPrompt = {
   type: PromptType,
   args: {
@@ -59,11 +63,30 @@ export const deleteAllPrompts = {
       const client = await pool.connect();
       const res = await client.query('DELETE FROM prompts')
       client.release()
+      console.log(typeof res.rows)
       return res.rows
 
     } catch (err) {
       console.error('Error: ', err);
       throw new Error('Trouble adding that prompt to the database!');
+    }
+  }
+}
+
+export const incrementPromptLikes = {
+  type: PromptType,
+  args: {
+    id: { type: GraphQLInt },
+  },
+  async resolve(_: any, args: IncrementPromptLikesType) {
+    const { id } = args
+    try {
+      const client = await pool.connect()
+      const res = await client.query('UPDATE prompts SET likes_counter = likes_counter + 1 WHERE id = $1 RETURNING *', [id]);
+      return res
+    } catch (err) {
+      console.error('Error: ', err);
+      throw new Error('Trouble incrementing the likes count');
     }
   }
 }
