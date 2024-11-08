@@ -63,7 +63,8 @@ var schema = new GraphQLSchema({
           const { prompt_text } = args;
           try {
             const client = await pool.connect()
-            const res = await client.query('INSERT INTO prompts (prompt_text, created_at, is_active) VALUES ($1, NOW(), false) RETURNING *', [prompt_text])
+            await client.query("UPDATE prompts SET is_active = false")
+            const res = await client.query('INSERT INTO prompts (prompt_text, created_at, is_active) VALUES ($1, NOW(), true) RETURNING *', [prompt_text])
             client.release()
             return res.rows[0]
           } catch (err) {
