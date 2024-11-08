@@ -19,6 +19,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URI,
 })
 
+// defining the shape of the prompt object
 const PromptType = new GraphQLObjectType({
   name: 'Prompt',
   fields: {
@@ -29,6 +30,7 @@ const PromptType = new GraphQLObjectType({
   }
 })
 
+// here is the contract where we can define queries/mutation + resolvers
 var schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: 'RootQueryType', // just used to uniquely identify for debugging purposes (only for server)
@@ -47,6 +49,28 @@ var schema = new GraphQLSchema({
           }
         },
       },
+    }
+  }),
+  mutation: new GraphQLObjectType({
+    name: 'RootMutationType',
+    fields: {
+      addPrompt: {
+        type: PromptType,
+        args: {
+          prompt_text: { type: GraphQLString },
+        },
+        async resolve(_, args): Promise<typeof PromptType> { // the first parameter isn't being used here and we need to access the top level args of addPrompt()
+          const { prompt_text } = args;
+          try {
+            const client = await pool.connect()
+            const res = await client.query('INSERT INTO prompts (prompt_text, created_at, is_active) VALUES ($1, NOW(), false) RETURNING *', [prompt_text])
+            client.release()
+            return res.rows[0]
+          } catch (err) {
+            throw new Error('Trouble adding that prompt to the database!')
+          }
+        }
+      }
     }
   })
 })
